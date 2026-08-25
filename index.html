@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!-- ==========================================================================
+     ĐỒ ÁN FRONTEND - GIAI ĐOẠN 3: LẬP TRÌNH DỮ LIỆU & RENDER DOM JAVASCRIPT
+     Mục tiêu: Nạp xe động từ mảng JSON, Lọc phân khúc, Live Search, Sắp xếp và Modal Popup
+     Công nghệ chủ đạo:
+       - Vanilla JS ES6+ (Template Literals, Dynamic Rendering)
+       - Live Search thời gian thực (onkeyup)
+       - Bộ lọc phân khúc đa tiêu chí & Sắp xếp giá (.filter, .sort)
+       - Modal Popup chi tiết thông số kỹ thuật (.find, classList.add)
+     ========================================================================== -->
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giai Đoạn 3: Logic Dynamic Render, Filter & Modal - Mercedes-Benz</title>
+    
+    <!-- [CÔNG NGHỆ: Google Fonts & Font Awesome CDN] -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ==========================================================================
+         1. HEADER & NAVIGATION
+         ========================================================================== -->
+    <header class="header">
+        <div class="container nav-wrapper">
+            <a href="#home" class="brand-logo">
+                <span class="brand-name">Mercedes-Benz</span>
+            </a>
+            <nav class="nav-menu">
+                <a href="#home" class="nav-link active">Trang Chủ</a>
+                <a href="#cars" class="nav-link">Bộ Sưu Tập Động</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+         2. SECTION CARS: BỘ ĐIỀU KHIỂN & KHUNG NẠP DỮ LIỆU ĐỘNG
+         - Công dụng: Cung cấp thanh tìm kiếm, sắp xếp, các nút lọc và lưới rỗng để JavaScript nạp thẻ xe
+         - Tác dụng: Cho phép tương tác 2 chiều mượt mà giữa thao tác người dùng và dữ liệu hiển thị
+         ========================================================================== -->
+    <section id="cars" class="section-padding collection-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="sub-title">CƠ SỞ DỮ LIỆU JAVASCRIPT THUẦN</span>
+                <h2 class="main-title">Trải Nghiệm Bộ Sưu Tập Xe Động</h2>
+                <div class="title-decor"></div>
+                <p class="section-desc">Toàn bộ danh sách 10 mẫu xe dưới đây được tạo động hoàn toàn bằng JavaScript ES6+.</p>
+            </div>
+
+            <!-- [CÔNG NGHỆ: Control Panel] Bảng điều khiển Tìm kiếm thời gian thực & Sắp xếp giá -->
+            <div class="control-panel">
+                <!-- Ô tìm kiếm Live Search: lắng nghe sự kiện onkeyup để tìm tức thì khi người dùng gõ phím -->
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Tìm theo tên xe, động cơ (VD: C300, Maybach, V8)..." onkeyup="searchCar()">
+                    <button id="clear-search" class="clear-search" onclick="clearSearch()" title="Xóa tìm kiếm"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- Thẻ <select> sắp xếp giá / mã lực: lắng nghe sự kiện onchange để sắp xếp lại mảng kết quả -->
+                <div class="sort-box">
+                    <label for="sort-select"><i class="fa-solid fa-arrow-down-wide-short"></i> Sắp xếp:</label>
+                    <select id="sort-select" onchange="sortCars(this.value)">
+                        <option value="default">Mặc định (Đặc sắc nhất)</option>
+                        <option value="price-asc">Giá bán: Thấp đến Cao</option>
+                        <option value="price-desc">Giá bán: Cao đến Thấp</option>
+                        <option value="power-desc">Công suất mã lực: Mạnh nhất</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- [CÔNG NGHỆ: Filter Buttons] Các nút bấm lọc xe theo phân khúc -->
+            <div class="filter-categories">
+                <button class="filter-btn active" onclick="filterCar('all', this)"><i class="fa-solid fa-border-all"></i> Tất Cả Xe</button>
+                <button class="filter-btn" onclick="filterCar('Sedan', this)"><i class="fa-solid fa-car-side"></i> Sedan Sang Trọng</button>
+                <button class="filter-btn" onclick="filterCar('SUV', this)"><i class="fa-solid fa-truck-monster"></i> SUV Đa Dụng</button>
+                <button class="filter-btn" onclick="filterCar('EQ', this)"><i class="fa-solid fa-bolt"></i> Thuần Điện EQ</button>
+                <button class="filter-btn" onclick="filterCar('AMG', this)"><i class="fa-solid fa-gauge-high"></i> Thể Thao AMG</button>
+            </div>
+
+            <!-- [CÔNG NGHỆ: Counter] Đếm số lượng xe đang hiển thị sau khi lọc -->
+            <div class="results-count">
+                Đang hiển thị: <strong id="visible-count">10</strong> dòng xe Mercedes-Benz chính hãng
+            </div>
+
+            <!-- [CÔNG NGHỆ: Dynamic Target Container] Vùng chứa được JavaScript hàm renderCars() nạp động các thẻ xe -->
+            <div class="car-grid" id="car-list">
+                <!-- Javascript sẽ tự động sinh ra các thẻ xe tại đây -->
+            </div>
+
+            <!-- [CÔNG NGHỆ: Empty State] Khối thông báo khi kết quả tìm kiếm/lọc trả về mảng rỗng -->
+            <div id="no-results" class="no-results" style="display: none;">
+                <i class="fa-solid fa-car-tunnel"></i>
+                <h3>Không tìm thấy dòng xe phù hợp</h3>
+                <p>Vui lòng thử lại với từ khóa tìm kiếm hoặc phân khúc khác.</p>
+                <button class="btn-primary-glow" onclick="resetFilter()"><i class="fa-solid fa-rotate-right"></i> Đặt Lại Bộ Lọc</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         3. MODAL CHI TIẾT THÔNG SỐ XE (POPUP DIALOG)
+         - Công dụng: Hiển thị bảng thông số đầy đủ và danh sách trang bị độc quyền của xe được chọn
+         - Tác dụng: Cung cấp trải nghiệm xem thông tin chi tiết mà không phải chuyển trang
+         - Công nghệ: position: fixed, backdrop-filter blur, lắng nghe click ngoài hoặc phím ESC để đóng
+         ========================================================================== -->
+    <div id="car-modal" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeCarModal()" title="Đóng cửa sổ"><i class="fa-solid fa-xmark"></i></button>
+            <div id="modal-content">
+                <!-- Nội dung thông số kỹ thuật được JavaScript nạp vào đây -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         4. FOOTER
+         ========================================================================== -->
+    <footer class="footer text-center">
+        <p>© 2026 Mercedes-Benz Vietnam - Báo cáo tiến trình: Giai đoạn 3 (JS Core, Dynamic DOM &amp; Modal).</p>
+    </footer>
+
+    <!-- [CÔNG NGHỆ: Script Tag] Liên kết file logic JavaScript Giai đoạn 3 -->
+    <script src="script.js"></script>
+</body>
+</html>
