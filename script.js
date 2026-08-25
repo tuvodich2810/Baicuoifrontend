@@ -547,42 +547,57 @@ function closeModalOnBackdrop(event) {
     }
 }
 
-// Đóng modal khi nhấn phím ESC
+// Đóng modal & Popover Zalo khi nhấn phím ESC
 document.addEventListener("keydown", function(e) {
     if (e.key === "Escape") {
         closeCarModal();
+        const zaloPopover = document.getElementById("zalo-chat-popover");
+        if (zaloPopover) zaloPopover.classList.remove("active");
     }
 });
 
 // ==========================================================================
-// 8. TỰ ĐỘNG CHỌN XE & CUỘN XUỐNG FORM LIÊN HỆ (AUTO-FILL FORM)
+// 8. TỰ ĐỘNG CHỌN XE & CUỘN XUỐNG FORM LIÊN HỆ (AUTO-FILL FORM & SMOOTH SCROLL)
+// - Công dụng: Tự động điền tên xe vào ô input, kích hoạt hiệu ứng chớp sáng viền ô và cuộn mượt xuống Form
+// - Tác dụng: Nâng cao trải nghiệm người dùng (UX), tiết kiệm thời gian gõ phím cho khách hàng VIP
+// - Công nghệ: 
+//     + DOM manipulation: carInput.value = tenXe
+//     + Reflow Animation Re-trigger: void carInput.offsetWidth
+//     + Smooth Scrolling API: scrollIntoView({ behavior: 'smooth' })
+//     + Focus Event: carInput.focus()
 // ==========================================================================
 function chonXe(tenXe) {
     const carInput = document.getElementById("tenxe");
     const contactSection = document.getElementById("contact");
 
     if (carInput) {
-        carInput.value = tenXe;
+        carInput.value = tenXe; // [CÔNG NGHỆ] Điền tự động giá trị vào ô input
         
-        // Thêm hiệu ứng viền phát sáng
+        // [CÔNG NGHỆ: DOM Reflow] Buộc trình duyệt tính toán lại layout để kích hoạt lại @keyframes flashInput
         carInput.classList.remove("field-highlight");
-        void carInput.offsetWidth; // Trigger reflow để kích hoạt lại animation
+        void carInput.offsetWidth; 
         carInput.classList.add("field-highlight");
         
+        // Focus con trỏ chuột vào ô nhập sau khi cuộn tới
         setTimeout(() => {
             carInput.focus();
         }, 600);
     }
 
+    // [CÔNG NGHỆ: Smooth Scroll] Cuộn màn hình êm ái tới Form liên hệ
     if (contactSection) {
         contactSection.scrollIntoView({ behavior: "smooth" });
     }
 
+    // [CÔNG NGHỆ: Toast Alert] Hiển thị thông báo nổi thông báo đã chọn dòng xe thành công
     showToast("Đã Chọn Dòng Xe", `Đã chọn mẫu xe <strong>${tenXe}</strong> cho buổi lái thử VIP. Vui lòng hoàn tất thông tin!`, "fa-car");
 }
 
 // ==========================================================================
 // 9. XỬ LÝ ĐẶT HẸN TẠI SHOWROOM ĐẠI LÝ ỦY QUYỀN
+// - Công dụng: Tự động chọn showroom tương ứng trong thẻ <select> và cuộn xuống form
+// - Tác dụng: Giúp khách hàng chọn nhanh đại lý gần nhất mà không cần tìm thủ công
+// - Công nghệ: selectElement.value, scrollIntoView smooth
 // ==========================================================================
 function datHenShowroom(showroomName) {
     const showroomSelect = document.getElementById("showroom");
@@ -591,7 +606,7 @@ function datHenShowroom(showroomName) {
     if (showroomSelect) {
         showroomSelect.value = showroomName;
         showroomSelect.classList.remove("field-highlight");
-        void showroomSelect.offsetWidth;
+        void showroomSelect.offsetWidth; // Trigger reflow
         showroomSelect.classList.add("field-highlight");
     }
 
@@ -603,10 +618,16 @@ function datHenShowroom(showroomName) {
 }
 
 // ==========================================================================
-// 10. XỬ LÝ GỬI BIỂU MẪU ĐĂNG KÝ LÁI THỬ VIP (FORM SUBMISSION)
+// 10. XỬ LÝ GỬI BIỂU MẪU ĐĂNG KÝ LÁI THỬ VIP (FORM VALIDATION & LOCALSTORAGE)
+// - Công dụng: Kiểm tra hợp lệ dữ liệu, hiển thị spinner đang gửi, lưu lịch hẹn vào LocalStorage
+// - Tác dụng: Ngăn reload trang mặc định, cung cấp phản hồi trực quan và lưu trữ dữ liệu bền vững
+// - Công nghệ:
+//     + event.preventDefault(): Chặn hành vi submit mặc định của form (chuẩn SPA)
+//     + Loading state: innerHTML với icon spinner Font Awesome
+//     + Web Storage API (localStorage): Lưu mảng JSON lịch hẹn trên trình duyệt
 // ==========================================================================
 function guiThongTin(event) {
-    event.preventDefault(); // Ngăn trình duyệt reload trang
+    event.preventDefault(); // [CÔNG NGHỆ] Ngăn trình duyệt reload lại trang
 
     const hotenInput = document.getElementById("hoten");
     const sdtInput = document.getElementById("sdt");
@@ -627,19 +648,19 @@ function guiThongTin(event) {
     const ngaylai = ngaylaiInput ? ngaylaiInput.value : "Trong tuần này";
     const ghichu = ghichuInput ? ghichuInput.value.trim() : "";
 
-    // Kiểm tra tính hợp lệ cơ bản
+    // [CÔNG NGHỆ: Validation] Kiểm tra các trường bắt buộc không được để trống
     if (!hoten || !sdt || !tenxe) {
         showToast("Thiếu Thông Tin", "Vui lòng nhập đầy đủ Họ tên, Số điện thoại và Mẫu xe muốn trải nghiệm!", "fa-triangle-exclamation");
         return;
     }
 
-    // Hiệu ứng trạng thái nút đang gửi
+    // [CÔNG NGHỆ: UI Feedback] Hiệu ứng nút đang gửi kèm icon xoay tròn
     const originalBtnContent = submitBtn.innerHTML;
     submitBtn.disabled = true;
     submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang Tiếp Nhận Hồ Sơ VIP...`;
 
     setTimeout(() => {
-        // Lưu lịch hẹn vào LocalStorage để chứng minh tính năng thực tế cho đồ án
+        // [CÔNG NGHỆ: LocalStorage] Lưu dữ liệu lịch hẹn dưới dạng mảng JSON trên trình duyệt
         const bookingData = {
             id: "MB-" + Date.now(),
             customerName: hoten,
@@ -657,14 +678,14 @@ function guiThongTin(event) {
         existingBookings.push(bookingData);
         localStorage.setItem("mercedes_testdrive_bookings", JSON.stringify(existingBookings));
 
-        // Khôi phục nút
+        // Khôi phục trạng thái nút ban đầu
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnContent;
 
-        // Reset form
+        // Reset lại form về rỗng
         document.getElementById("test-drive-form").reset();
 
-        // Hiển thị thông báo Toast sang trọng
+        // [CÔNG NGHỆ: Toast Alert] Hiển thị thông báo chúc mừng thành công sang trọng
         showToast(
             "Đăng Ký Thành Công! ⭐", 
             `Kính chào <strong>${hoten}</strong>, Mercedes-Benz đã ghi nhận yêu cầu lái thử xe <strong>${tenxe}</strong> (${hinhthuc}). Chuyên viên tư vấn VIP sẽ liên hệ trong ít phút!`,
@@ -674,12 +695,16 @@ function guiThongTin(event) {
 }
 
 // ==========================================================================
-// 11. HỆ THỐNG HIỂN THỊ TOAST NOTIFICATION
+// 11. HỆ THỐNG HIỂN THỊ TOAST NOTIFICATION TỰ HỦY
+// - Công dụng: Tạo và hiển thị hộp thông báo nổi góc trên bên phải màn hình
+// - Tác dụng: Cung cấp thông báo phản hồi ngay lập tức cho mọi tương tác quan trọng
+// - Công nghệ: DOM createElement, Dynamic Injection, Tự động dọn rác DOM (toast.remove()) sau 5s
 // ==========================================================================
 function showToast(title, message, iconClass = "fa-circle-info") {
     const toastContainer = document.getElementById("toast-container");
     if (!toastContainer) return;
 
+    // [CÔNG NGHỆ: Dynamic Element] Tạo phần tử toast mới
     const toast = document.createElement("div");
     toast.className = "toast";
 
@@ -695,24 +720,30 @@ function showToast(title, message, iconClass = "fa-circle-info") {
 
     toastContainer.appendChild(toast);
 
-    // Tự động biến mất sau 5 giây với animation trượt mượt mà
+    // [CÔNG NGHỆ: Garbage Collection / Dọn dẹp DOM] Tự động trượt mờ và xóa khỏi DOM sau 5 giây
     setTimeout(() => {
         toast.style.opacity = "0";
         toast.style.transform = "translateX(100%)";
         toast.style.transition = "all 0.4s ease";
         setTimeout(() => {
-            toast.remove();
+            toast.remove(); // [CÔNG NGHỆ] Xóa hoàn toàn node khỏi DOM để giải phóng bộ nhớ
         }, 400);
     }, 5000);
 }
 
 // ==========================================================================
 // 12. XỬ LÝ MENU MOBILE, THANH CUỘN & NÚT BACK TO TOP & SCROLL SPY
+// - Công dụng:
+//     + Đóng mở menu trượt (Hamburger) trên thiết bị di động
+//     + Đổi màu nền Header khi cuộn qua 50px
+//     + Hiển thị nút Back-to-Top khi cuộn qua 400px
+//     + Tự động kích hoạt gạch chân menu tương ứng với Section đang đọc (Scroll Spy)
+// - Công nghệ: window.addEventListener("scroll"), offsetTop, classList.toggle
 // ==========================================================================
 function toggleMobileMenu() {
     const navMenu = document.getElementById("nav-menu");
     if (navMenu) {
-        navMenu.classList.toggle("open");
+        navMenu.classList.toggle("open"); // [CÔNG NGHỆ] Bật/tắt class open để mở menu di động
     }
 }
 
@@ -722,7 +753,7 @@ function initScrollEvents() {
     const navLinks = document.querySelectorAll(".nav-link");
 
     window.addEventListener("scroll", function() {
-        // Đổi màu Header khi cuộn qua 50px
+        // [CÔNG DỤNG] Đổi màu Header sang nền đậm hơn khi cuộn qua 50px
         if (window.scrollY > 50) {
             header.classList.add("scrolled");
         } else {
@@ -771,3 +802,38 @@ function scrollToTop() {
         behavior: "smooth"
     });
 }
+
+// ==========================================================================
+// 13. XỬ LÝ BONG BÓNG ZALO CHAT & TƯƠNG TÁC WIDGET LIÊN HỆ VIP
+// - Công dụng:
+//     + Bật / tắt hộp thoại Mini Chat Zalo & Quét mã QR
+//     + Tự động ẩn số thông báo badge khi khách đã mở chat
+//     + Tự đóng khi click ra ngoài
+// ==========================================================================
+function toggleZaloWidget() {
+    const popover = document.getElementById("zalo-chat-popover");
+    const badge = document.querySelector(".zalo-badge");
+    if (!popover) return;
+
+    const isActive = popover.classList.toggle("active");
+    
+    // Ẩn badge thông báo khi người dùng đã click mở chat
+    if (isActive && badge) {
+        badge.style.display = "none";
+    }
+}
+
+// Lắng nghe sự kiện click bên ngoài để đóng popover Zalo
+document.addEventListener("click", function(event) {
+    const popover = document.getElementById("zalo-chat-popover");
+    const zaloBtn = document.getElementById("btn-zalo-toggle");
+    if (!popover || !zaloBtn) return;
+
+    if (popover.classList.contains("active")) {
+        // Nếu click không thuộc popover và cũng không thuộc nút mở zalo
+        if (!popover.contains(event.target) && !zaloBtn.contains(event.target)) {
+            popover.classList.remove("active");
+        }
+    }
+});
+

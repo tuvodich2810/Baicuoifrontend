@@ -67,7 +67,7 @@ html {
 }
 
 body {
-    background-color: var(--bg-dark-primary);
+    background-color: #090c11;
     color: var(--text-primary);
     font-family: var(--font-body);
     line-height: 1.6;
@@ -471,7 +471,7 @@ body {
    PHẦN 6: BỘ LỌC & TÌM KIẾM XE (COLLECTION CONTROLS)
    ========================================================================== */
 .collection-section {
-    background-color: var(--bg-dark-primary);
+    background-color: #090c11;
 }
 
 .control-panel {
@@ -1052,7 +1052,7 @@ body {
    PHẦN 9: BIỂU MẪU LÁI THỬ VIP (CONTACT & BOOKING SECTION)
    ========================================================================== */
 .contact-section {
-    background-color: var(--bg-dark-primary);
+    background-color: #090c11;
     border-top: 1px solid var(--border-color);
 }
 
@@ -1706,31 +1706,467 @@ body {
     }
 }
 
-/* NÚT BACK TO TOP */
-.btn-back-to-top {
+/* ==========================================================================
+   PHẦN 12B: BỘ BONG BÓNG LIÊN HỆ VIP GÓC PHẢI DƯỚI (FLOATING ACTION WIDGET)
+   ========================================================================== */
+.floating-contact-group {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 45px;
-    height: 45px;
+    right: 28px;
+    bottom: 28px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    pointer-events: none; /* Cho phép click xuyên qua khoảng trống */
+}
+
+/* Item bong bóng cơ bản */
+.btn-floating-item {
+    pointer-events: auto;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    background-color: rgba(0, 168, 255, 0.2);
-    border: 1px solid var(--accent-blue);
-    color: #ffffff;
-    cursor: pointer;
-    z-index: 999;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
-    transition: var(--transition-smooth);
+    position: relative;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.3s ease;
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.btn-floating-item:hover {
+    transform: scale(1.1) translateY(-3px);
+}
+
+.btn-floating-item:active {
+    transform: scale(0.95);
+}
+
+/* Nút cuộn lên đầu trang */
+.btn-back-to-top {
+    width: 44px;
+    height: 44px;
+    background-color: rgba(17, 23, 35, 0.85);
+    border: 1px solid rgba(0, 168, 255, 0.4);
+    color: var(--accent-blue);
+    font-size: 15px;
+    display: none; /* Điều khiển hiển thị bằng JS qua scroll */
 }
 
 .btn-back-to-top:hover {
     background-color: var(--accent-blue);
-    transform: translateY(-4px);
+    color: #ffffff;
+    border-color: var(--accent-blue);
     box-shadow: var(--shadow-glow);
+}
+
+/* Nút lái thử VIP */
+.btn-floating-drive {
+    width: 46px;
+    height: 46px;
+    background: linear-gradient(135deg, #d4af37, #b88e1a);
+    color: #0b0f17;
+    font-size: 17px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+}
+
+.btn-floating-drive:hover {
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.6);
+    color: #000000;
+}
+
+/* Nút gọi Hotline VIP */
+.btn-floating-phone {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    font-size: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 22px rgba(16, 185, 129, 0.4);
+}
+
+.btn-floating-phone i {
+    animation: phoneWiggle 3.5s infinite ease-in-out;
+}
+
+@keyframes phoneWiggle {
+    0%, 75%, 100% { transform: rotate(0deg); }
+    78%, 86% { transform: rotate(-16deg); }
+    82%, 90% { transform: rotate(16deg); }
+    94% { transform: rotate(0deg); }
+}
+
+.btn-floating-phone:hover {
+    box-shadow: 0 10px 28px rgba(16, 185, 129, 0.65);
+}
+
+/* Wrapper bong bóng Zalo chính */
+.zalo-bubble-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+
+/* Nút bong bóng Zalo */
+.btn-floating-zalo {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #0068ff, #004ecc);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 10px 30px rgba(0, 104, 255, 0.55);
+    z-index: 2;
+    padding: 0;
+}
+
+.btn-floating-zalo .zalo-icon-svg {
+    width: 36px;
+    height: 36px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    transition: transform 0.3s ease;
+}
+
+.btn-floating-zalo:hover {
+    box-shadow: 0 12px 35px rgba(0, 104, 255, 0.8);
+}
+
+.btn-floating-zalo:hover .zalo-icon-svg {
+    transform: scale(1.08) rotate(-4deg);
+}
+
+/* Vòng sóng xung kích tỏa ra mềm mại (Pulse Rings) */
+.pulse-ring {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+    border-radius: 50%;
+    border: 2px solid #0068ff;
+    pointer-events: none;
+    z-index: 1;
+    animation: pulseRingAnim 2.4s infinite cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pulse-ring.delay {
+    animation-delay: 1.2s;
+}
+
+@keyframes pulseRingAnim {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.85;
+    }
+    60% {
+        opacity: 0.35;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+/* Badge thông báo đỏ nổi bật */
+.zalo-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    background: #ef4444;
+    color: #ffffff;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-dark-primary);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.7);
+    animation: bounceBadge 2.2s infinite ease-in-out;
+    z-index: 3;
+}
+
+@keyframes bounceBadge {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* Tooltip hiển thị trên Desktop */
+.floating-tooltip {
+    position: absolute;
+    right: calc(100% + 14px);
+    top: 50%;
+    transform: translateY(-50%) translateX(10px);
+    background: rgba(15, 21, 33, 0.95);
+    color: #f8fafc;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.floating-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -6px;
+    transform: translateY(-50%);
+    border-width: 5px 0 5px 6px;
+    border-style: solid;
+    border-color: transparent transparent transparent rgba(15, 21, 33, 0.95);
+}
+
+.btn-floating-item:hover .floating-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) translateX(0);
+}
+
+/* HỘP THOẠI MINI CHAT ZALO / QR POPOVER */
+.zalo-chat-popover {
+    position: absolute;
+    bottom: 74px;
+    right: 0;
+    width: 340px;
+    background: rgba(14, 19, 30, 0.96);
+    border: 1px solid rgba(0, 168, 255, 0.35);
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 104, 255, 0.22);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    z-index: 1005;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: auto;
+    overflow: hidden;
+}
+
+.zalo-chat-popover.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.zalo-popover-header {
+    background: linear-gradient(135deg, rgba(0, 104, 255, 0.25), rgba(9, 12, 17, 0.9));
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.zalo-consultant-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar-wrap {
+    position: relative;
+    width: 44px;
+    height: 44px;
+}
+
+.avatar-wrap img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-blue);
+}
+
+.status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 11px;
+    height: 11px;
+    background: #10b981;
+    border-radius: 50%;
+    border: 2px solid #0e131e;
+}
+
+.consultant-text h6 {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.consultant-text .verify-badge {
+    color: var(--accent-blue);
+    font-size: 12px;
+}
+
+.consultant-text span {
+    color: var(--text-secondary);
+    font-size: 11px;
+    display: block;
+}
+
+.btn-close-zalo-popover {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: var(--text-secondary);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    font-size: 14px;
+}
+
+.btn-close-zalo-popover:hover {
+    background: rgba(239, 68, 68, 0.25);
+    color: #ef4444;
+}
+
+.zalo-popover-body {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.zalo-msg-bubble {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+
+.zalo-msg-bubble p {
+    color: var(--text-primary);
+    font-size: 12.5px;
+    line-height: 1.55;
+    margin: 0 0 6px 0;
+}
+
+.zalo-msg-bubble p:last-of-type {
+    margin-bottom: 8px;
+}
+
+.zalo-msg-bubble strong {
+    color: var(--accent-gold);
+}
+
+.msg-time {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    display: block;
+}
+
+.zalo-quick-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+.btn-zalo-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+}
+
+.btn-zalo-chat {
+    background: linear-gradient(135deg, #0068ff, #004ecc);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 104, 255, 0.4);
+}
+
+.btn-zalo-chat:hover {
+    box-shadow: 0 6px 20px rgba(0, 104, 255, 0.65);
+    transform: translateY(-2px);
+}
+
+.btn-zalo-call {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--accent-silver);
+}
+
+.btn-zalo-call:hover {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: #10b981;
+    color: #10b981;
+    transform: translateY(-2px);
+}
+
+.zalo-qr-box {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.qr-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.qr-img-wrap {
+    display: inline-block;
+    background: #ffffff;
+    padding: 6px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.qr-img-wrap img {
+    width: 110px;
+    height: 110px;
+    display: block;
+}
+
+.qr-subtext {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.qr-subtext strong {
+    color: var(--accent-blue);
 }
 
 /* ==========================================================================
@@ -1818,6 +2254,54 @@ body {
         flex-direction: column;
         text-align: center;
     }
+
+    /* Bong bóng liên hệ trên Tablet & Mobile */
+    .floating-contact-group {
+        right: 16px;
+        bottom: 20px;
+        gap: 10px;
+    }
+
+    .btn-floating-zalo {
+        width: 52px;
+        height: 52px;
+    }
+
+    .btn-floating-zalo .zalo-icon-svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .btn-floating-phone {
+        width: 46px;
+        height: 46px;
+        font-size: 18px;
+    }
+
+    .btn-floating-drive {
+        width: 44px;
+        height: 44px;
+        font-size: 15px;
+    }
+
+    .btn-back-to-top {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .floating-tooltip {
+        display: none !important; /* Tối ưu trải nghiệm cảm ứng trên màn hình nhỏ */
+    }
+
+    .zalo-chat-popover {
+        position: fixed;
+        bottom: 84px;
+        right: 16px;
+        left: 16px;
+        width: auto;
+        max-width: calc(100vw - 32px);
+    }
 }
 
 @media (max-width: 480px) {
@@ -1846,4 +2330,24 @@ body {
     .contact-form-card {
         padding: 25px 18px;
     }
+
+    /* Hỗ trợ vùng tai thỏ & Home Indicator iPhone */
+    .floating-contact-group {
+        right: 12px;
+        bottom: max(16px, env(safe-area-inset-bottom, 16px));
+        gap: 8px;
+    }
+
+    .zalo-chat-popover {
+        bottom: max(78px, calc(env(safe-area-inset-bottom, 16px) + 68px));
+        right: 12px;
+        left: 12px;
+        max-width: calc(100vw - 24px);
+    }
+
+    .qr-img-wrap img {
+        width: 95px;
+        height: 95px;
+    }
 }
+
