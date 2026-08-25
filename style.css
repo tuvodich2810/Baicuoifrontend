@@ -1783,7 +1783,7 @@ body {
     color: #000000;
 }
 
-/* Nút gọi Hotline VIP */
+/* Nút gọi Hotline VIP (Tĩnh & Sang trọng) */
 .btn-floating-phone {
     width: 50px;
     height: 50px;
@@ -1792,17 +1792,6 @@ body {
     font-size: 20px;
     border: 1px solid rgba(255, 255, 255, 0.25);
     box-shadow: 0 8px 22px rgba(16, 185, 129, 0.4);
-}
-
-.btn-floating-phone i {
-    animation: phoneWiggle 3.5s infinite ease-in-out;
-}
-
-@keyframes phoneWiggle {
-    0%, 75%, 100% { transform: rotate(0deg); }
-    78%, 86% { transform: rotate(-16deg); }
-    82%, 90% { transform: rotate(16deg); }
-    94% { transform: rotate(0deg); }
 }
 
 .btn-floating-phone:hover {
